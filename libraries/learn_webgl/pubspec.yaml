@@ -1,0 +1,4 @@
+name: learn_webgl
+#info
+dependencies:
+  test: "^0.12.29"

@@ -1,0 +1,6 @@
+name: learn_args
+dependencies:
+  browser:
+  args: "^1.0.2"
+  learn_dart_io:
+    path: ../learn_dart_io

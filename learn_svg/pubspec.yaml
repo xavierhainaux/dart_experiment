@@ -1,0 +1,6 @@
+name: learn_svg
+
+dependencies:
+  browser:
+  vector_math: "^2.0.5"
+  dnd: "^0.4.0"

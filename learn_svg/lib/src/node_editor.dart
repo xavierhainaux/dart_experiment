@@ -1,14 +1,14 @@
 import 'dart:html' hide Node;
 import 'dart:svg' hide Point;
 import 'package:learn_svg/src/node_utils.dart';
-import 'node_output.dart';
+import 'node_field.dart';
 import 'package:vector_math/vector_math.dart';
 
 class NodeEditor{
 
   static final NodeEditor editor = new NodeEditor._();
 
-  NodeOutput currentOutput;
+  NodeField currentOutput;
   SvgElement svg;
 
   NodeEditor._(){

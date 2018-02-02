@@ -13,17 +13,22 @@ void main() {
   node.addOutput('Value1');
   node.addOutput('Value2');
   node.addOutput('Value3');
+  node.addInput('inputValue');
 
   // Node 2
   Node node2 = new Node('Node 2');
   node2.addOutput('Text In');
   node2.addOutput('Value 5');
+  node2.addInput('inputValue');
 
   // Node 3
   Node node3 = new Node('Node 3');
   node3.addOutput('Color4');
   node3.addOutput('Position');
-  node3.addOutput('Noise Octaves');
+  node3.addOutput('Noise Octaves tests');
+  node3.addInput('inputValue');
+  node3.addInput('inputValue');
+  node3.addInput('inputValue');
 
   // Connect Nodes
   node.outputs[0].connectTo(node3);
@@ -31,7 +36,7 @@ void main() {
   node2.outputs[1].connectTo(node3);
 
   // Move to initial positions
-  node.position = new Point<int>(150, 20);
-  node2.position = new Point<int>(20, 50);
-  node3.position = new Point<int>(300, 150);
+  node.position = new Point<int>(200, 20);
+  node2.position = new Point<int>(20, 100);
+  node3.position = new Point<int>(350, 150);
 }

@@ -3,56 +3,7 @@ body{
     color: #d4d4d4;
     font-family: sans-serif;
 }
-.node:before{
-    content:attr(title) " ";
-    display: block;
-    border-top-left-radius:.75em;
-    border-top-right-radius:.75em;
-    background-color:#6e6e6e;
-    padding:0.1em .3em 0em;
-    margin:-.1em -.3em 0.2em;
-}
-.node{
-    background-color: #4e4e4e;
-    border-radius: .75em;
-    display: inline-block;
-    padding:0.1em .3em .25em;
-    position:absolute;
-}
-.output,
-.connection:after{
-    position:absolute;
-    border:solid 1px #dedede;
-    background-color:#2e2e2e;
-    width:0.5em;
-    height:0.5em;
-    border-radius:0.5em;
-}
-.node.connected > .output,
-.connection.filled:after{
-    border:solid 1px transparent;
-    background-color:#aeaeae;
-}
-.node > .output:hover,
-.connection:hover:after{
-    border-color:red;
-}
-.output{
-    left: -.5em;
-    top:1em;
-    cursor: pointer;
-}
-.connection{
-    width:100%;
-    position:relative;
-    padding-right:0.5em;
-    cursor:pointer;
-}
-.connection:after{
-    content:"";
-    right:0em;
-    top:0.25em;
-}
+
 svg{
     position:absolute;
     top:0px;
@@ -61,3 +12,70 @@ svg{
     width:100%;
     height:100%;
 }
+
+/* node */
+
+.node{
+    background-color: #4e4e4e;
+    border-radius: .75em;
+    display: inline-block;
+    padding:0.1em .3em .25em;
+    position:absolute;
+}
+
+.node:before{
+    content:attr(title) " ";
+    display: block;
+    border-top-left-radius:.75em;
+    border-top-right-radius:.75em;
+    background-color:#6e6e6e;
+    padding:0.1em 1em 0em;
+    margin:-.1em -.3em 0.2em;
+}
+
+.nodeField{
+    width:100%;
+    position:relative;
+    padding-right:0.5em;
+    padding-left:0.7em;
+    cursor:pointer;
+}
+
+/* Node filed connector */
+
+.input:before{
+    position:absolute;
+    border:dashed 1px #dedede;
+    background-color:#2e2e2e;
+    width:0.5em;
+    height:0.5em;
+    border-radius:0.5em;
+    content:"";
+    left:-0.6em;
+    top:0.25em;
+}
+
+.output:after{
+    position:absolute;
+    border:solid 1px #dedede;
+    background-color:#2e2e2e;
+    width:0.5em;
+    height:0.5em;
+    border-radius:0.5em;
+    content:"";
+    right:0.6em;
+    top:0.25em;
+}
+
+.input.filled:before,
+.output.filled:after{
+    border:solid 1px transparent;
+    background-color:#aeaeae;
+}
+
+.input:hover:before,
+.output:hover:after{
+    border-color:red;
+}
+
+

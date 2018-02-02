@@ -97,7 +97,7 @@ class Node {
     }
   }
 
-  void moveTo(Point<int> point) {
+  set position(Point<int> point) {
     domElement.style.top = '${point.y}px';
     domElement.style.left = '${point.x}px';
     updatePosition();

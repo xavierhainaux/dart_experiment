@@ -1,17 +1,13 @@
 import 'dart:html' hide Node;
 import 'package:learn_svg/src/node.dart';
 
-///Exemple de node
+///Exemple de code
 ///https://codepen.io/xgundam05/pen/KjqJn
 
-///dnd : drag and drop library
+///dnd : drag and drop dart library
 ///http://code.makery.ch/library/dart-drag-and-drop/
 
 void main() {
-
-  // DEMO
-  // ========
-
   // Node 1
   Node node = new Node('Node 1');
   node.addOutput('Value1');
@@ -30,12 +26,12 @@ void main() {
   node3.addOutput('Noise Octaves');
 
   // Connect Nodes
+  node.outputs[0].connectTo(node3);
   node2.outputs[0].connectTo(node);
   node2.outputs[1].connectTo(node3);
-  node.outputs[0].connectTo(node3);
 
   // Move to initial positions
-  node.moveTo(new Point<int>(150, 20));
-  node2.moveTo(new Point<int>(20, 50));
-  node3.moveTo(new Point<int>(300, 150));
+  node.position = new Point<int>(150, 20);
+  node2.position = new Point<int>(20, 50);
+  node3.position = new Point<int>(300, 150);
 }

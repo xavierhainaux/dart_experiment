@@ -13,15 +13,21 @@ class NodeField {
   final NodeFieldType nodeFieldType;
 
   Element domElement;
-  PathElement _path;
-  Node toNode;
+  PathElement _path;// Todo (jpu) : should be in Connection
+  Node toNode;// Todo (jpu) :should be deleted
+
+  Connection outputConnection;
+  final List<Connection> inputConnections = new List();
+
+  final int _index;
+  int get index => _index;
 
   Stream get onClick => domElement.onClick;
 
-  NodeField.input(String name) : this._(name, NodeFieldType.input);
-  NodeField.output(String name) : this._(name, NodeFieldType.output);
+  NodeField.input(String name, int index) : this._(name, NodeFieldType.input, index);
+  NodeField.output(String name, int index) : this._(name, NodeFieldType.output, index);
 
-  NodeField._(this.name, this.nodeFieldType) {
+  NodeField._(this.name, this.nodeFieldType, this._index) {
     domElement = document.createElement('div');
     domElement.classes.add('nodeField');
     domElement.innerHtml = name;
@@ -83,22 +89,29 @@ class NodeField {
             offset.top + domElement.offsetHeight ~/ 2);
         break;
     }
-
     return result;
   }
 
-  void connectTo(Node node) {
+  void connectTo(Node node, int fieldIndex) {
     toNode = node;
-    node.connected = true;
-    node.domElement.classes.add('connected');
+//    node.connected = true;
+//    node.domElement.classes.add('connected');
 
     domElement.classes.remove('empty');
     domElement.classes.add('filled');
 
-    node.inputConnections.add(new Connection()..output = this);
+    NodeField nodeInputField = node.fields[fieldIndex];
+
+    Connection connection = new Connection()
+      ..index = fieldIndex
+      ..output = this
+      ..input = nodeInputField;
+
+    outputConnection = connection;
+    nodeInputField.inputConnections.add(connection);
 
     Point<int> fromPoint = getConnectionPoint();
-    Point<int> toPoint = node.getInputPoint();
+    Point<int> toPoint = node.getInputPoint(fieldIndex);
     setPath(fromPoint, toPoint);
   }
 }

@@ -1,8 +1,3 @@
-import 'dart:html';
-import 'dart:svg' hide Point;
-
-import 'package:learn_svg/src/node_editor.dart';
-
 import 'node_field.dart';
 
 class Offset {
@@ -17,6 +12,9 @@ class Offset {
 
 class Connection {
   NodeField output;
+  NodeField input;
+
+  int index;// Todo (jpu) :should be deleted
 
 //  PathElement _path;
 //

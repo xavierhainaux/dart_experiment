@@ -1,7 +1,6 @@
 import 'dart:html';
 import 'package:dnd/dnd.dart';
 import 'node_editor.dart';
-import 'node_input.dart';
 import 'node_field.dart';
 import 'node_utils.dart';
 
@@ -9,12 +8,11 @@ class Node {
   final String name;
   Element domElement;
 
-  List<NodeField> inputs = new List();
-  List<Connection> inputConnections = new List();
+  List<NodeField> fields = new List();
+  List<NodeField> get inputs => fields.where((f)=> f.nodeFieldType == NodeFieldType.input).toList();
+  List<NodeField> get outputs => fields.where((f)=> f.nodeFieldType == NodeFieldType.output).toList();
+//  List<Connection> inputConnections = new List();
 
-  List<NodeField> outputs = new List();
-
-  bool connected = false;
   Draggable draggable;
   bool isDragging = false;
 
@@ -31,28 +29,31 @@ class Node {
       ..onDragEnd.listen(_onDragEnd);
   }
 
-  Point<int> getInputPoint() {
-    return inputs[0].getConnectionPoint();
+  Point<int> getInputPoint(int fieldIndex) {
+    return fields[fieldIndex].getConnectionPoint();
   }
 
   NodeField addInput(String name) {
-    NodeField input = new NodeField.input(name);
+    NodeField input = new NodeField.input(name, fields.length);
+    fields.add(input);
+    domElement.children.add(input.domElement);
+
     input.onClick.listen((e) {
       if (NodeEditor.editor.currentOutput != null && !outputs.contains(NodeEditor.editor.currentOutput)) {
         NodeField tmp = NodeEditor.editor.currentOutput;
         NodeEditor.editor.currentOutput = null;
-        tmp.connectTo(this);
+        tmp.connectTo(this, fields.indexOf(input));
       }
       e.stopPropagation();
     });
 
-    inputs.add(input);
-    domElement.children.add(input.domElement);
     return input;
   }
 
   NodeField addOutput(String name) {
-    NodeField output = new NodeField.output(name);
+    NodeField output = new NodeField.output(name, fields.length);
+    fields.add(output);
+    domElement.children.add(output.domElement);
 
     output.onClick.listen((e) {
       //if an output in already active
@@ -77,40 +78,41 @@ class Node {
       e.stopPropagation();
     });
 
-    outputs.add(output);
-    domElement.children.add(output.domElement);
     return output;
   }
 
+  /// que fais-tu réellement ?
   void detachOutput(NodeField output) {
-    int index = -1;
-    for (int i = 0; i < inputConnections.length; i++) {
-      if (inputConnections[i].output == output) index = i;
-    }
+    output.deletePath();
+    output.toNode = null;
+    output.outputConnection.input.inputConnections.remove(output.outputConnection);
 
-    if (index >= 0) {
-      inputConnections[index].output.deletePath();
-      inputConnections[index].output.toNode = null;
-      inputConnections.removeAt(index);
-    }
-
-    if (inputConnections.length <= 0) {
+    if (inputs.length <= 0) {
       domElement.classes.remove('connected');
     }
   }
 
   void updatePosition() {
 
-    for (int i = 0; i < inputConnections.length; i++) {
-      Point<int> fromPoint = inputConnections[i].output.getConnectionPoint();
-      Point<int> toPoint = getInputPoint();
-      inputConnections[i].output.setPath(fromPoint, toPoint);
+    //inputs
+    for (int i = 0; i < inputs.length; i++) {
+      if(inputs[i].inputConnections.length > 0 ) {
+        for(int j = 0; j < inputs[i].inputConnections.length; j++){
+          Point<int> fromPoint = inputs[i].inputConnections[j].output
+              .getConnectionPoint();
+          Point<int> toPoint = inputs[i].inputConnections[j].input.getConnectionPoint();
+          inputs[i].inputConnections[j].output.setPath(fromPoint, toPoint);
+        }
+      }
     }
 
+    //outputs
     for (int j = 0; j < outputs.length; j++) {
       if (outputs[j].toNode != null) {
         Point<int> fromPoint = outputs[j].getConnectionPoint();
-        Point<int> toPoint = outputs[j].toNode.getInputPoint();
+
+        int inputIndex = outputs[j].outputConnection.index;
+        Point<int> toPoint = outputs[j].toNode.getInputPoint(inputIndex);
         outputs[j].setPath(fromPoint, toPoint);
       }
     }

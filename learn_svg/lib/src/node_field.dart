@@ -60,7 +60,7 @@ class NodeField {
     pathStr += 'C';
     pathStr += '${fromPoint.x + diff.x / 3 * 2},${fromPoint.y} ';
     pathStr += '${fromPoint.x + diff.x / 3},${toPoint.y} ';
-    pathStr += '${toPoint.x},${toPoint.y}';
+    pathStr += '${toPoint.x - 7},${toPoint.y}';// Todo (jpu) : -7 ??
 
     _path.setAttributeNS(null, 'd', pathStr);
   }

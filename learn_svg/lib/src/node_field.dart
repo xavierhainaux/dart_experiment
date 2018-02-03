@@ -103,7 +103,7 @@ class NodeField {
     NodeField nodeInputField = node.fields[fieldIndex];
 
     Connection connection = new Connection()
-      ..index = fieldIndex
+//      ..index = fieldIndex
       ..output = this
       ..input = nodeInputField;
 

@@ -110,9 +110,7 @@ class Node {
     for (int j = 0; j < outputs.length; j++) {
       if (outputs[j].toNode != null) {
         Point<int> fromPoint = outputs[j].getConnectionPoint();
-
-        int inputIndex = outputs[j].outputConnection.index;
-        Point<int> toPoint = outputs[j].toNode.getInputPoint(inputIndex);
+        Point<int> toPoint = outputs[j].outputConnection.input.getConnectionPoint();
         outputs[j].setPath(fromPoint, toPoint);
       }
     }

@@ -68,7 +68,7 @@ void fullExemple() {
   nodeInt03.position = new Point<int>(420, 360);
 
   Node nodeDivide = new Node('Divide');
-  nodeDivide.addOutputField<int>('Value', 15);
+  nodeDivide.addOutputField<int>('Value', 0);
   nodeDivide.addInputField<int>('inputValue 1', 0);
   nodeDivide.addInputField<int>('inputValue 2', 0);
   nodeDivide.position = new Point<int>(250, 120);

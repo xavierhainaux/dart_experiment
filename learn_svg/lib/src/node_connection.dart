@@ -4,8 +4,8 @@ import 'package:learn_svg/src/node_editor.dart';
 import 'package:learn_svg/src/node_field.dart';
 
 class Connection {
-  NodeField output;
-  NodeField input;
+  NodeField outputField;
+  NodeField inputField;
 
   PathElement path;
 

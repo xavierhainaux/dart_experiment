@@ -39,6 +39,14 @@ class NodeEditor{
         currentOutput.drawTemporaryPath(mousePosition);
       }
     });
+
+    Element button = new ButtonElement()
+      ..text = 'Evaluate'
+      ..onClick.listen((MouseEvent event){
+        NodeEditor.editor.update();
+      });
+    document.body.children.add(button);
+
   }
 
   static Offset getFullOffset(Element element) {
@@ -75,7 +83,7 @@ class NodeEditor{
   }
 
   void update() {
-    Node launcherNode = nodes.firstWhere((n)=>n.launcher == true, orElse: () => throw "No launcher node defined");
+    Node launcherNode = nodes.firstWhere((n)=>n.isLauncher == true, orElse: () => throw "No launcher node defined");
     launcherNode.evaluate();
   }
 }

@@ -79,8 +79,8 @@ class NodeField<T> {
     NodeField nodeInputField = node.fields[fieldIndex];
 
     Connection connection = new Connection()
-      ..output = this
-      ..input = nodeInputField;
+      ..outputField = this
+      ..inputField = nodeInputField;
 
     outputConnections.add(connection);
     nodeInputField.inputConnection = connection;

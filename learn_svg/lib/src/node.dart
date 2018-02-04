@@ -1,8 +1,9 @@
 import 'dart:html';
 import 'package:dnd/dnd.dart';
-import 'package:learn_svg/src/node_utils.dart';
 import 'node_editor.dart';
 import 'node_field.dart';
+
+typedef void EvaluateFunction(Node node);
 
 class Node {
   final String name;
@@ -10,15 +11,15 @@ class Node {
 
   List<NodeField> fields = new List();
 
-  bool launcher = false;
+  bool isLauncher = false;
 
-  List<NodeField> get inputs => fields.where((f)=> f.nodeFieldType == NodeFieldType.input).toList();
-  List<NodeField> get outputs => fields.where((f)=> f.nodeFieldType == NodeFieldType.output).toList();
+  List<NodeField> get inputFields => fields.where((f)=> f.nodeFieldType == NodeFieldType.input).toList();
+  List<NodeField> get outputFields => fields.where((f)=> f.nodeFieldType == NodeFieldType.output).toList();
 
   Draggable draggable;
   bool isDragging = false;
 
-  Function evaluationFunction;
+  EvaluateFunction evaluationFunction;
 
   Node(this.name) {
     domElement = document.createElement('div');
@@ -38,43 +39,43 @@ class Node {
     return fields[fieldIndex].getConnectionPoint();
   }
 
-  NodeField addInput<T>(String name, T value) {
-    NodeField input = new NodeField.input(name, value, this);
-    fields.add(input);
-    domElement.children.add(input.domElement);
+  NodeField addInputField<T>(String name, T value) {
+    NodeField inputField = new NodeField.input(name, value, this);
+    fields.add(inputField);
+    domElement.children.add(inputField.domElement);
 
-    input.onClick.listen((e) {
-      if (NodeEditor.editor.currentOutput != null && !outputs.contains(NodeEditor.editor.currentOutput)) {
-        if(input.inputConnection != null){
-          input.inputConnection.deletePath();
-          input.inputConnection.output.outputConnections.remove(input.inputConnection);
-          input.inputConnection = null;
+    inputField.onClick.listen((e) {
+      if (NodeEditor.editor.currentOutput != null && !outputFields.contains(NodeEditor.editor.currentOutput)) {
+        if(inputField.inputConnection != null){
+          inputField.inputConnection.deletePath();
+          inputField.inputConnection.outputField.outputConnections.remove(inputField.inputConnection);
+          inputField.inputConnection = null;
         }
         NodeEditor.editor.currentOutput.tempConnection.deletePath();
         NodeField tmp = NodeEditor.editor.currentOutput;
         NodeEditor.editor.currentOutput = null;
-        tmp.connectTo(this, fields.indexOf(input));
+        tmp.connectTo(this, fields.indexOf(inputField));
       }else if(NodeEditor.editor.currentOutput == null){
-        if(input.inputConnection != null){
-          NodeEditor.editor.currentOutput = input.inputConnection.output;
-          input.inputConnection.deletePath();
-          input.inputConnection.output.outputConnections.remove(input.inputConnection);
-          input.inputConnection = null;
+        if(inputField.inputConnection != null){
+          NodeEditor.editor.currentOutput = inputField.inputConnection.outputField;
+          inputField.inputConnection.deletePath();
+          inputField.inputConnection.outputField.outputConnections.remove(inputField.inputConnection);
+          inputField.inputConnection = null;
         }
 
       }
       e.stopPropagation();
     });
 
-    return input;
+    return inputField;
   }
 
-  NodeField addOutput<T>(String name, T value) {
-    NodeField output = new NodeField<T>.output(name, value, this);
-    fields.add(output);
-    domElement.children.add(output.domElement);
+  NodeField addOutputField<T>(String name, T value) {
+    NodeField outputField = new NodeField<T>.output(name, value, this);
+    fields.add(outputField);
+    domElement.children.add(outputField.domElement);
 
-    output.onClick.listen((e) {
+    outputField.onClick.listen((e) {
 
 //      //if an output path is already dynamic draw
 //      if (NodeEditor.editor.currentOutput != null) {
@@ -88,7 +89,7 @@ class Node {
 //      }
 //
       //make this output active
-      NodeEditor.editor.currentOutput = output;
+      NodeEditor.editor.currentOutput = outputField;
 //
 //      if (output.toNode != null) {
 ////        output.toNode.detachOutput(output);
@@ -98,7 +99,7 @@ class Node {
       e.stopPropagation();
     });
 
-    return output;
+    return outputField;
   }
 
 //  /// que fais-tu réellement ?
@@ -125,21 +126,21 @@ class Node {
   void updatePosition() {
 
     //inputs
-    for (int i = 0; i < inputs.length; i++) {
-      if(inputs[i].inputConnection != null ) {
-        Point<int> fromPoint = inputs[i].inputConnection.output.getConnectionPoint();
-        Point<int> toPoint = inputs[i].inputConnection.input.getConnectionPoint();
-        inputs[i].inputConnection.setPath(fromPoint, toPoint);
+    for (int i = 0; i < inputFields.length; i++) {
+      if(inputFields[i].inputConnection != null ) {
+        Point<int> fromPoint = inputFields[i].inputConnection.outputField.getConnectionPoint();
+        Point<int> toPoint = inputFields[i].inputConnection.inputField.getConnectionPoint();
+        inputFields[i].inputConnection.setPath(fromPoint, toPoint);
       }
     }
 
     //outputs
-    for (int i = 0; i < outputs.length; i++) {
-      if (outputs[i].outputConnections.length > 0) {
-        for (int j = 0; j < outputs[i].outputConnections.length; ++j) {
-          Point<int> fromPoint = outputs[i].getConnectionPoint();
-          Point<int> toPoint = outputs[i].outputConnections[j].input.getConnectionPoint();
-          outputs[i].outputConnections[j].setPath(fromPoint, toPoint);
+    for (int i = 0; i < outputFields.length; i++) {
+      if (outputFields[i].outputConnections.length > 0) {
+        for (int j = 0; j < outputFields[i].outputConnections.length; ++j) {
+          Point<int> fromPoint = outputFields[i].getConnectionPoint();
+          Point<int> toPoint = outputFields[i].outputConnections[j].inputField.getConnectionPoint();
+          outputFields[i].outputConnections[j].setPath(fromPoint, toPoint);
         }
       }
     }
@@ -153,38 +154,20 @@ class Node {
     domElement.style.left = '${point.x}px';
     updatePosition();
   }
-  dynamic evaluate(/*NodeField outputField*/) {
+  void evaluate(/*NodeField outputField*/) {
     //set les valeurs des inputs en fonction des outputs si il en existe
-
-    //
-    for (NodeField input in inputs) {
+    for (NodeField input in inputFields) {
       if(input.inputConnection != null){
         //evaluer chaque output node des connections d'input
-        input.inputConnection.output.node.evaluate();
-        // assigne les valeurs des outputs aux inputs
-        input.inputConnection.input.value = input.inputConnection.output.value;
+        input.inputConnection.outputField.node.evaluate();
+        // assigne les valeurs des connections outputs aux connections inputs
+        input.inputConnection.inputField.value = input.inputConnection.outputField.value;
+
       }
     }
-
-    dynamic value;
-
-
-//    /// prepare outputs if needed with evaluation
-//
-//
-//    if(inputs.length > 0) {
-//      if (inputs[0].inputConnections.length == 0) {
-//        value = inputs[0].value; //use default defined value
-//      } else {
-//        value = inputs[0].inputConnections[0].output.node.evaluate(inputs[0].inputConnections[0].output);
-//      }
-//    }else{
-//      value = outputField.value;
-//    }
-//
-//    if(evaluationFunction != null && outputField != null) {
-//      evaluationFunction(outputField.node);
-//    }
-    return value;
+    //evalue le fonction de traitement des nodes inputs vers les nodes outputs
+    if(evaluationFunction != null){
+      evaluationFunction(this);
+    }
   }
 }

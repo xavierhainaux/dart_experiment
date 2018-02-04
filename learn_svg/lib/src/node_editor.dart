@@ -1,5 +1,7 @@
 import 'dart:html' hide Node;
 import 'dart:svg' hide Point;
+import 'package:learn_svg/src/node.dart';
+import 'package:learn_svg/src/node_connection.dart';
 import 'package:learn_svg/src/node_utils.dart';
 import 'node_field.dart';
 import 'package:vector_math/vector_math.dart';
@@ -11,16 +13,18 @@ class NodeEditor{
   NodeField currentOutput;
   SvgElement svg;
 
+  List<Node> nodes = new List<Node>();
+
   NodeEditor._(){
     svg = new SvgElement.tag("svg");
     document.body.children.add(svg);
 
     window.onClick.listen((e) {
       if (currentOutput != null) {
-        currentOutput.deletePath();
+        currentOutput.tempConnection.deletePath();
         if (currentOutput.toNode != null) {
           //Todo (jpu) : ?? never pass here ??
-          currentOutput.toNode.detachOutput(currentOutput);
+//          currentOutput.toNode.detachOutput(currentOutput);
         }
         currentOutput = null;
       }
@@ -28,6 +32,9 @@ class NodeEditor{
 
     window.onMouseMove.listen((MouseEvent e) {
       if (currentOutput != null) {
+        if(currentOutput.tempConnection == null){
+          currentOutput.tempConnection = new Connection();
+        }
         Point<int> mousePosition = new Point<int>(e.client.x, e.client.y);
         currentOutput.drawTemporaryPath(mousePosition);
       }
@@ -65,5 +72,10 @@ class NodeEditor{
     }
 
     return result;
+  }
+
+  void update() {
+    Node launcherNode = nodes.firstWhere((n)=>n.launcher == true, orElse: () => throw "No launcher node defined");
+    launcherNode.evaluate();
   }
 }

@@ -9,15 +9,3 @@ class Offset {
     return 'Offset{x: $x, y: $y, top: $top, left: $left}';
   }
 }
-
-class Connection {
-  NodeField output;
-  NodeField input;
-
-//  int index;// Todo (jpu) : should be deleted
-
-}
-
-
-
-

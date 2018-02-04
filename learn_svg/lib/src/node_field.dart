@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:html' hide Node;
 import 'dart:svg' hide Point;
+import 'package:learn_svg/src/node_connection.dart';
 import 'node.dart';
 import 'node_editor.dart';
 import 'node_utils.dart';
@@ -8,29 +9,33 @@ import 'node_utils.dart';
 enum NodeFieldType { input, output }
 
 ///This represent a node field with it's output circle
-class NodeField {
+class NodeField<T> {
   final String name;
   final NodeFieldType nodeFieldType;
+  final String _displayedName;
+  String get displayedName => _displayedName;
+
+  T value;
 
   Element domElement;
-  PathElement _path;// Todo (jpu) : should be in Connection
+
   Node toNode;// Todo (jpu) :should be deleted
 
-  Connection outputConnection;
-  final List<Connection> inputConnections = new List();
+  Connection tempConnection;
+  List<Connection> outputConnections = new List();
+  Connection inputConnection = null;
 
-  final int _index;
-  int get index => _index;
+  final Node node;
 
   Stream get onClick => domElement.onClick;
 
-  NodeField.input(String name, int index) : this._(name, NodeFieldType.input, index);
-  NodeField.output(String name, int index) : this._(name, NodeFieldType.output, index);
+  NodeField.input(String name, T value, Node node) : this._(name, NodeFieldType.input, value, node);
+  NodeField.output(String name, T value, Node node) : this._(name, NodeFieldType.output, value, node);
 
-  NodeField._(this.name, this.nodeFieldType, this._index) {
+  NodeField._(this.name, this.nodeFieldType, this.value, this.node):this._displayedName = '$name   (${value.runtimeType}) : $value' {
     domElement = document.createElement('div');
     domElement.classes.add('nodeField');
-    domElement.innerHtml = name;
+    domElement.innerHtml = _displayedName;
 
     if (nodeFieldType == NodeFieldType.input) {
       domElement.classes.add('input');
@@ -38,42 +43,15 @@ class NodeField {
       domElement.classes.add('output');
       domElement.classes.add('empty');
 
-      _initPath();
+//      outputConnections.forEach((outputConnection)=>outputConnection.initPath());
     }
   }
 
-  void _initPath() {
-    _path =
-        document.createElementNS(NodeEditor.editor.svg.namespaceUri, 'path');
-    _path.setAttributeNS(null, 'stroke', '#8e8e8e');
-    _path.setAttributeNS(null, 'stroke-width', '2');
-    _path.setAttributeNS(null, 'fill', 'none');
-    NodeEditor.editor.svg.children.add(_path);
-  }
-
-  /// Create string representing a svg curve path between two points
-  void setPath(Point<int> fromPoint, Point<int> toPoint) {
-    Point<int> diff =
-        new Point<int>(toPoint.x - fromPoint.x, toPoint.y - fromPoint.y);
-
-    String pathStr = 'M${fromPoint.x},${fromPoint.y} ';
-    pathStr += 'C';
-    pathStr += '${fromPoint.x + diff.x / 3 * 2},${fromPoint.y} ';
-    pathStr += '${fromPoint.x + diff.x / 3},${toPoint.y} ';
-    pathStr += '${toPoint.x - 7},${toPoint.y}';// Todo (jpu) : -7 ??
-
-    _path.setAttributeNS(null, 'd', pathStr);
-  }
-
-  void deletePath() {
-    _path.attributes.remove('d');
-  }
-
-  bool get hasPath => _path.getAttribute('d') != null;
+  bool get hasPath => outputConnections[0].path.getAttribute('d') != null;
 
   void drawTemporaryPath(Point<int> toPoint) {
     Point<int> fromPoint = getConnectionPoint();
-    setPath(fromPoint, toPoint);
+    tempConnection.setPath(fromPoint, toPoint);
   }
 
   Point<int> getConnectionPoint() {
@@ -94,8 +72,6 @@ class NodeField {
 
   void connectTo(Node node, int fieldIndex) {
     toNode = node;
-//    node.connected = true;
-//    node.domElement.classes.add('connected');
 
     domElement.classes.remove('empty');
     domElement.classes.add('filled');
@@ -103,15 +79,14 @@ class NodeField {
     NodeField nodeInputField = node.fields[fieldIndex];
 
     Connection connection = new Connection()
-//      ..index = fieldIndex
       ..output = this
       ..input = nodeInputField;
 
-    outputConnection = connection;
-    nodeInputField.inputConnections.add(connection);
+    outputConnections.add(connection);
+    nodeInputField.inputConnection = connection;
 
     Point<int> fromPoint = getConnectionPoint();
     Point<int> toPoint = node.getInputPoint(fieldIndex);
-    setPath(fromPoint, toPoint);
+    connection.setPath(fromPoint, toPoint);
   }
 }

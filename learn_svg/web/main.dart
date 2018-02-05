@@ -1,7 +1,5 @@
 import 'dart:html' hide Node;
 import 'package:learn_svg/src/node.dart';
-import 'package:learn_svg/src/node_editor.dart';
-import 'package:vector_math/vector_math.dart';
 
 ///Exemple de code
 ///https://codepen.io/xgundam05/pen/KjqJn
@@ -29,7 +27,7 @@ void simpleExemple(){
   node02.addInputField<int>('input 2', 0);
   node02.position = new Point<int>(400, 20);
 
-  node01.outputFields[0].connectTo(node02, 0);
+  node01.outputFields[0].connectTo(node02.inputFields[0]);
 }
 
 void simpleExemple2(){
@@ -50,8 +48,8 @@ void simpleExemple2(){
   node03.addInputField('03 input 01', 7);
   node03.position = new Point<int>(600, 40);
 
-  node01.outputFields.first.connectTo(node02, 1);
-  node02.outputFields.first.connectTo(node03, 0);
+  node01.outputFields.first.connectTo(node02.inputFields[0]);
+  node02.outputFields.first.connectTo(node03.inputFields[0]);
 }
 
 void fullExemple() {
@@ -102,13 +100,13 @@ void fullExemple() {
   nodeLog.isLauncher = true;
 
   // Connect Nodes
-  nodeInt01.outputFields[0].connectTo(nodeDivide, 1);
-  nodeInt02.outputFields[0].connectTo(nodeAdd, 2);
-  nodeInt02.outputFields[0].connectTo(nodeDivide, 2);
-  nodeDivide.outputFields[0].connectTo(nodeAdd, 1);
-  nodeAdd.outputFields[0].connectTo(nodeMultiply, 1);
-  nodeInt03.outputFields[0].connectTo(nodeMultiply, 2);
-  nodeMultiply.outputFields[0].connectTo(nodeLog, 0);
+  nodeInt01.outputFields[0].connectTo(nodeDivide.inputFields[0]);
+  nodeInt02.outputFields[0].connectTo(nodeAdd.inputFields[1]);
+  nodeInt02.outputFields[0].connectTo(nodeDivide.inputFields[1]);
+  nodeDivide.outputFields[0].connectTo(nodeAdd.inputFields[0]);
+  nodeAdd.outputFields[0].connectTo(nodeMultiply.inputFields[0]);
+  nodeInt03.outputFields[0].connectTo(nodeMultiply.inputFields[1]);
+  nodeMultiply.outputFields[0].connectTo(nodeLog.inputFields[0]);
 
   // Evaluate one first time ? why ?
 //  NodeEditor.editor.update();

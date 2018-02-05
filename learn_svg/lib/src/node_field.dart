@@ -70,23 +70,21 @@ class NodeField<T> {
     return result;
   }
 
-  void connectTo(Node node, int fieldIndex) {
-    toNode = node;
+  void connectTo(NodeField inputField) {
+    toNode = inputField.node;
 
     domElement.classes.remove('empty');
     domElement.classes.add('filled');
 
-    NodeField nodeInputField = node.fields[fieldIndex];
-
     Connection connection = new Connection()
       ..outputField = this
-      ..inputField = nodeInputField;
+      ..inputField = inputField;
 
     outputConnections.add(connection);
-    nodeInputField.inputConnection = connection;
+    inputField.inputConnection = connection;
 
     Point<int> fromPoint = getConnectionPoint();
-    Point<int> toPoint = node.getInputPoint(fieldIndex);
+    Point<int> toPoint = inputField.getConnectionPoint();
     connection.setPath(fromPoint, toPoint);
   }
 }

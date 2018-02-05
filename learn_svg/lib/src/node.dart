@@ -54,7 +54,7 @@ class Node {
         NodeEditor.editor.currentOutput.tempConnection.deletePath();
         NodeField tmp = NodeEditor.editor.currentOutput;
         NodeEditor.editor.currentOutput = null;
-        tmp.connectTo(this, fields.indexOf(inputField));
+        tmp.connectTo(inputField);
       }else if(NodeEditor.editor.currentOutput == null){
         if(inputField.inputConnection != null){
           NodeEditor.editor.currentOutput = inputField.inputConnection.outputField;

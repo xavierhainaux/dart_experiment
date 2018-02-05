@@ -89,7 +89,7 @@ void main() {
       Node node02 = new Node('Node 02');
       node02.addInputField('input01', 3);
 
-      node01.outputFields.first.connectTo(node02, 0);
+      node01.outputFields.first.connectTo(node02.inputFields[0]);
       node02.evaluate();
 
       /// vérifie qu'un output existe avec connection connection
@@ -131,8 +131,8 @@ void main() {
       Node node03 = new Node('Node 03');
       node03.addInputField('03 input 01', 7);
 
-      node01.outputFields.first.connectTo(node02, 1);
-      node02.outputFields.first.connectTo(node03, 0);
+      node01.outputFields.first.connectTo(node02.inputFields[0]);
+      node02.outputFields.first.connectTo(node03.inputFields[0]);
       node03.evaluate();
 
       //node 1 state

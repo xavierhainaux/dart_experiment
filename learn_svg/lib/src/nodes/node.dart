@@ -1,7 +1,13 @@
 import 'dart:html';
 import 'package:dnd/dnd.dart';
-import 'node_editor.dart';
-import 'node_field.dart';
+import '../node_editor.dart';
+import '../node_field.dart';
+
+export 'values/node_int.dart';
+export 'math/node_add.dart';
+export 'math/node_multiply.dart';
+export 'math/node_divide.dart';
+export 'output/node_log.dart';
 
 typedef void EvaluateFunction(Node node);
 
@@ -13,8 +19,10 @@ class Node {
 
   bool isLauncher = false;
 
-  List<NodeField> get inputFields => fields.where((f)=> f.nodeFieldType == NodeFieldType.input).toList();
-  List<NodeField> get outputFields => fields.where((f)=> f.nodeFieldType == NodeFieldType.output).toList();
+  List<NodeField> get inputFields =>
+      fields.where((f) => f.nodeFieldType == NodeFieldType.input).toList();
+  List<NodeField> get outputFields =>
+      fields.where((f) => f.nodeFieldType == NodeFieldType.output).toList();
 
   Draggable draggable;
   bool isDragging = false;
@@ -27,10 +35,10 @@ class Node {
     domElement.style.position = 'absolute';
     domElement.setAttribute('title', name);
     document.body.children.add(domElement);
-    draggable = new Draggable(domElement,
-        avatarHandler: new AvatarHandler.original())
-      ..onDrag.listen(_onDrag)
-      ..onDragEnd.listen(_onDragEnd);
+    draggable =
+        new Draggable(domElement, avatarHandler: new AvatarHandler.original())
+          ..onDrag.listen(_onDrag)
+          ..onDragEnd.listen(_onDragEnd);
 
     NodeEditor.editor.nodes.add(this);
   }
@@ -45,24 +53,27 @@ class Node {
     domElement.children.add(inputField.domElement);
 
     inputField.onClick.listen((e) {
-      if (NodeEditor.editor.currentOutput != null && !outputFields.contains(NodeEditor.editor.currentOutput)) {
-        if(inputField.inputConnection != null){
+      if (NodeEditor.editor.currentOutput != null &&
+          !outputFields.contains(NodeEditor.editor.currentOutput)) {
+        if (inputField.inputConnection != null) {
           inputField.inputConnection.deletePath();
-          inputField.inputConnection.outputField.outputConnections.remove(inputField.inputConnection);
+          inputField.inputConnection.outputField.outputConnections
+              .remove(inputField.inputConnection);
           inputField.inputConnection = null;
         }
         NodeEditor.editor.currentOutput.tempConnection.deletePath();
         NodeField tmp = NodeEditor.editor.currentOutput;
         NodeEditor.editor.currentOutput = null;
         tmp.connectTo(inputField);
-      }else if(NodeEditor.editor.currentOutput == null){
-        if(inputField.inputConnection != null){
-          NodeEditor.editor.currentOutput = inputField.inputConnection.outputField;
+      } else if (NodeEditor.editor.currentOutput == null) {
+        if (inputField.inputConnection != null) {
+          NodeEditor.editor.currentOutput =
+              inputField.inputConnection.outputField;
           inputField.inputConnection.deletePath();
-          inputField.inputConnection.outputField.outputConnections.remove(inputField.inputConnection);
+          inputField.inputConnection.outputField.outputConnections
+              .remove(inputField.inputConnection);
           inputField.inputConnection = null;
         }
-
       }
       e.stopPropagation();
     });
@@ -76,7 +87,6 @@ class Node {
     domElement.children.add(outputField.domElement);
 
     outputField.onClick.listen((e) {
-
 //      //if an output path is already dynamic draw
 //      if (NodeEditor.editor.currentOutput != null) {
 //        if (NodeEditor.editor.currentOutput.hasPath) {
@@ -118,18 +128,19 @@ class Node {
     updatePosition();
   }
 
-  void _onDragEnd(DraggableEvent event){
+  void _onDragEnd(DraggableEvent event) {
     isDragging = false;
     updatePosition();
   }
 
   void updatePosition() {
-
     //inputs
     for (int i = 0; i < inputFields.length; i++) {
-      if(inputFields[i].inputConnection != null ) {
-        Point<int> fromPoint = inputFields[i].inputConnection.outputField.getConnectionPoint();
-        Point<int> toPoint = inputFields[i].inputConnection.inputField.getConnectionPoint();
+      if (inputFields[i].inputConnection != null) {
+        Point<int> fromPoint =
+            inputFields[i].inputConnection.outputField.getConnectionPoint();
+        Point<int> toPoint =
+            inputFields[i].inputConnection.inputField.getConnectionPoint();
         inputFields[i].inputConnection.setPath(fromPoint, toPoint);
       }
     }
@@ -139,14 +150,17 @@ class Node {
       if (outputFields[i].outputConnections.length > 0) {
         for (int j = 0; j < outputFields[i].outputConnections.length; ++j) {
           Point<int> fromPoint = outputFields[i].getConnectionPoint();
-          Point<int> toPoint = outputFields[i].outputConnections[j].inputField.getConnectionPoint();
+          Point<int> toPoint = outputFields[i]
+              .outputConnections[j]
+              .inputField
+              .getConnectionPoint();
           outputFields[i].outputConnections[j].setPath(fromPoint, toPoint);
         }
       }
     }
   }
 
-  Point<int> _position = new Point<int>(0,0);
+  Point<int> _position = new Point<int>(0, 0);
   Point<int> get position => _position;
   set position(Point<int> point) {
     _position = point;
@@ -154,19 +168,20 @@ class Node {
     domElement.style.left = '${point.x}px';
     updatePosition();
   }
+
   void evaluate(/*NodeField outputField*/) {
     //set les valeurs des inputs en fonction des outputs si il en existe
     for (NodeField input in inputFields) {
-      if(input.inputConnection != null){
+      if (input.inputConnection != null) {
         //evaluer chaque output node des connections d'input
         input.inputConnection.outputField.node.evaluate();
         // assigne les valeurs des connections outputs aux connections inputs
-        input.inputConnection.inputField.value = input.inputConnection.outputField.value;
-
+        input.inputConnection.inputField.value =
+            input.inputConnection.outputField.value;
       }
     }
     //evalue le fonction de traitement des nodes inputs vers les nodes outputs
-    if(evaluationFunction != null){
+    if (evaluationFunction != null) {
       evaluationFunction(this);
     }
   }

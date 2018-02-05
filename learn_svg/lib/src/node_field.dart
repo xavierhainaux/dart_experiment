@@ -1,8 +1,7 @@
 import 'dart:async';
 import 'dart:html' hide Node;
-import 'dart:svg' hide Point;
 import 'package:learn_svg/src/node_connection.dart';
-import 'node.dart';
+import 'nodes/node.dart';
 import 'node_editor.dart';
 import 'node_utils.dart';
 

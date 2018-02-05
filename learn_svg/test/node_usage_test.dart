@@ -1,5 +1,5 @@
 import 'dart:html' hide Node;
-import 'package:learn_svg/src/node.dart';
+import 'package:learn_svg/src/nodes/node.dart';
 import "package:test/test.dart";
 
 void main() {

@@ -1,8 +1,9 @@
 import 'dart:html' hide Node;
 import 'dart:svg' hide Point;
-import 'package:learn_svg/src/node.dart';
+import 'package:learn_svg/src/nodes/node.dart';
 import 'package:learn_svg/src/node_connection.dart';
 import 'package:learn_svg/src/node_utils.dart';
+import 'package:learn_svg/src/nodes/node.dart';
 import 'node_field.dart';
 import 'package:vector_math/vector_math.dart';
 

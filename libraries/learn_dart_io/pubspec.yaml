@@ -4,3 +4,4 @@ dependencies:
   browser:
   learn_args:
     path: ../learn_args
+  path: "^1.5.1"

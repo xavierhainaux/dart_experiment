@@ -12,6 +12,7 @@ void reduceWithLambda() {
 
   int reducedData = dataList.reduce((a, b) => a + b);
   print(reducedData);
+  print(dataList);
 }
 
 /// reduce with min / max function
@@ -26,5 +27,6 @@ void reduceWithMinMax() {
   ///keep only max data
   int maxData = dataList.reduce(max);
   print(maxData);
+  print(dataList);
 }
 

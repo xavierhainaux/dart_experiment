@@ -11,9 +11,13 @@ import 'package:vector_math/vector_math.dart';
 
 
 # un peu de documentation de référence
-les verions de webgl, lien avec openGL, openglES
+les versions de webgl, lien avec openGL, openglES
 http://webglreport.com/
 https://webglstats.com/
+
+Les spécifications : https://www.khronos.org/registry/webgl/specs/latest/1.0/
+
+Quick Reference card : https://www.khronos.org/files/webgl/webgl-reference-card-1_0.pdf
 
 ## le workflow / process schema
 - les types de shaders (glsl), les attributs, les uniforms, la varying

@@ -1,7 +1,7 @@
 import 'dart:io';
 
 main(){
-  Directory current = Directory.current; // this gives the project pass
+  Directory current = Directory.current; // this gives the project path
   print(current);
 
   File file = new File("bin/file/test.txt");

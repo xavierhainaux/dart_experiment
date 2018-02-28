@@ -33,19 +33,18 @@ class Renderer{
   ''';
 
   Renderer(){
+    CanvasElement canvas = new CanvasElement(width:800, height:800); //canvas internal resolution
+    document.body.children.add(canvas);
 
-    initGL();
+    initGL(canvas);
     initProgram();
 
     gl.clearColor(0.8, 0.8, 0.8, 1);
   }
 
-  void initGL() {
-    CanvasElement canvas = new CanvasElement(width:800, height:800); //canvas internal resolution
-    document.body.children.add(canvas);
-
+  void initGL(CanvasElement canvas) {
     try {
-      gl = canvas.getContext("webgl") as webgl.RenderingContext;
+      gl = canvas.getContext("experimental-webgl") as webgl.RenderingContext;
       if (gl == null) { throw "This context is not defined."; }
     } catch (error) {
       throw "Your web browser does not support WebGL!";
@@ -103,6 +102,7 @@ class Renderer{
 
   void render({num time : 0.0}) {
     draw();
+
     window.requestAnimationFrame((num time) {
       this.render(time: time);
     });

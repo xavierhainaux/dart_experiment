@@ -123,9 +123,9 @@ class Renderer {
     String fsSource = """
     precision mediump float;
 
-    varying vec2 vTextureCoord;
-
     uniform sampler2D uSampler;
+    
+    varying vec2 vTextureCoord;
 
     void main(void) {
       gl_FragColor = texture2D(uSampler, vec2(vTextureCoord.s, vTextureCoord.t));

@@ -15,25 +15,43 @@ class Renderer{
     1.0, 0.0, 0.0,
     0.0, 1.0, 0.0
   ];
+
+  List<double> colors = [
+    1.0, 0.0, 0.0,
+    0.0, 1.0, 0.0,
+    0.0, 0.0, 1.0
+  ];
+
   int elementsByVertices = 3;
   int get vertexCount => vertices.length ~/ elementsByVertices;
 
   String vertexShaderSource = '''
     attribute vec3 aVertexPosition;
-
-    void main() {
+    attribute vec4 aVertexColor;
+  
+    varying vec4 vColor;
+  
+    void main(void) {
       gl_Position = vec4(aVertexPosition, 1.0);
+      vColor = aVertexColor;
     }
   ''';
 
   String fragmentShaderSource = '''
-    void main() {
-      gl_FragColor = vec4(0.5, 0.5, 1.0, 1.0);
+    precision mediump float;
+    
+    varying vec4 vColor;
+    
+    void main(void) {
+      gl_FragColor = vColor;
     }
   ''';
 
   int attributPositionLocation;
   webgl.Buffer vertexPositionBuffer;
+
+  int attributColorLocation;
+  webgl.Buffer vertexColorBuffer;
 
   Renderer(){
     CanvasElement canvas = new CanvasElement(width:800, height:800); //canvas internal resolution
@@ -60,6 +78,9 @@ class Renderer{
 
     vertexPositionBuffer = gl.createBuffer();
     attributPositionLocation = setupAttribut(program, "aVertexPosition", elementsByVertices , vertices, vertexPositionBuffer);
+
+    vertexColorBuffer = gl.createBuffer();
+    attributColorLocation = setupAttribut(program, "aVertexColor", elementsByVertices , colors, vertexColorBuffer);
   }
 
   webgl.Program buildProgram(String vs, String fs) {

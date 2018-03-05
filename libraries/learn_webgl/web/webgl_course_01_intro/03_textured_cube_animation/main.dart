@@ -13,16 +13,8 @@ Future main() async {
 }
 
 Future<ImageElement> loadImage(String imagePath) async {
-  Completer completer = new Completer<ImageElement>();
-
-  ImageElement image = new Element.tag('img');
-  image.src = imagePath;
-
-  image.onLoad.listen((e) {
-    completer.complete(image);
-  });
-
-  return completer.future;
+  ImageElement image = new ImageElement()..src = imagePath;
+  return image.onLoad.first;
 }
 
 class Renderer {

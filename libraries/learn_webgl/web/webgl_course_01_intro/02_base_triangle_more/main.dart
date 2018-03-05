@@ -4,7 +4,7 @@ import 'dart:typed_data';
 import 'dart:web_gl' as webgl;
 
 Future main() async {
-  new Renderer()..render();
+  new Renderer()..startRenderLoop();
 }
 
 class Renderer{
@@ -130,12 +130,11 @@ class Renderer{
     return attributLocation;
   }
 
-  void render({num time : 0.0}) {
-    draw();
-
-    window.requestAnimationFrame((num time) {
-      this.render(time: time);
-    });
+  startRenderLoop() async {
+    while (true) {
+      await window.animationFrame;
+      draw();
+    }
   }
 
   void draw() {
